@@ -34,18 +34,28 @@ const CustomizeProducts = ({
   };
 
   const isVariantInStock = (choices: { [key: string]: string }) => {
-    return variants.some((variant) => {
-      const variantChoices = variant.choices;
-      if (!variantChoices) return false;
+    if (!variants || variants.length === 0) {
+      console.log("No variants available.");
+      return false;
+    }
 
-      return (
-        Object.entries(choices).every(
-          ([key, value]) => variantChoices[key] === value
-        ) &&
-        variant.stock?.inStock &&
-        variant.stock?.quantity &&
-        variant.stock?.quantity > 0
-      );
+    return variants.some((variant) => {
+      const variantChoices = variant.choices || {}; // Default to an empty object if choices are undefined
+
+      console.log("Checking variant choices:", variantChoices);
+      console.log("Against input choices:", choices);
+
+      const allChoicesMatch = Object.entries(choices).every(([key, value]) => {
+        const match =
+          variantChoices[key] === undefined || variantChoices[key] === value;
+        console.log(`Key: ${key}, Value: ${value}, Match: ${match}`);
+        return match;
+      });
+
+      const inStock = variant.stock?.inStock;
+      console.log("Variant in stock:", inStock);
+
+      return allChoicesMatch && inStock;
     });
   };
 
@@ -97,7 +107,6 @@ const CustomizeProducts = ({
                       : "white",
                     color: selected || disabled ? "white" : "#f35c7a",
                     boxShadow: disabled ? "none" : "",
-                    
                   }}
                   key={choice.description}
                   onClick={clickHandler}
@@ -114,7 +123,7 @@ const CustomizeProducts = ({
         variantId={
           selectedVariant?._id || "00000000-0000-0000-0000-000000000000"
         }
-        stockNumber={selectedVariant?.stock?.quantity || 0}
+        stockNumber={selectedVariant?.stock?.quantity || 10}
       />
       {/* COLOR */}
       {/* 

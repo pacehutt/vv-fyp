@@ -50,6 +50,7 @@ const ProductList = async ({
   let res: any = null;
   try {
     res = await productQuery.find();
+    console.log(res);
   } catch (error) {
     console.error(error);
   }
@@ -82,7 +83,7 @@ const ProductList = async ({
           </div>
           <div className="flex justify-between">
             <span className="font-medium">{product.name}</span>
-            <span className="font-semibold">${product.price?.price}</span>
+            <span className="font-semibold">₹{product.price?.price}</span>
           </div>
           {product.additionalInfoSections && (
             <div
@@ -101,13 +102,14 @@ const ProductList = async ({
           </button>
         </Link>
       ))}
-      {searchParams?.cat || searchParams?.name ? (
+
+      {res?.hasNext() && (
         <Pagination
           currentPage={res.currentPage || 0}
           hasPrev={res.hasPrev()}
           hasNext={res.hasNext()}
         />
-      ) : null}
+      )}
     </div>
   );
 };

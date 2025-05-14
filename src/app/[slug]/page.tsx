@@ -6,7 +6,6 @@ import { wixClientServer } from "@/lib/wixClientServer";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import TryOut from "../../../components/TryOut";
-import VirtualRoom from "../../../components/VirtualRoom";
 
 const SinglePage = async ({ params }: { params: { slug: string } }) => {
   const wixClient = await wixClientServer();
@@ -21,6 +20,8 @@ const SinglePage = async ({ params }: { params: { slug: string } }) => {
   }
 
   const product = products.items[0];
+
+  console.log(product?.productOptions[0]);
 
   return (
     <>

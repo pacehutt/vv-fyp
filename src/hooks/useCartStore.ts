@@ -34,6 +34,11 @@ export const useCartStore = create<CartState>((set) => ({
   },
   addItem: async (wixClient, productId, variantId, quantity) => {
     set((state) => ({ ...state, isLoading: true }));
+    if (!process.env.NEXT_PUBLIC_WIX_APP_ID) {
+      console.warn(
+        "NEXT_PUBLIC_WIX_APP_ID is not defined. Please set it in your environment variables."
+      );
+    }
     const response = await wixClient.currentCart.addToCurrentCart({
       lineItems: [
         {
