@@ -5,6 +5,7 @@ const config: Config = {
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    './components/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     extend: {
@@ -15,6 +16,8 @@ const config: Config = {
       },
       colors: {
         lama: "#54A82F",
+        chut: 'rgb(251, 207, 231)',
+        lund: 'rgb(0 129 40)',
       },
     },
   },
