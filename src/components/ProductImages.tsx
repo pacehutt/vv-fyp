@@ -1,60 +1,94 @@
 "use client";
 
-import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-// const images = [
-//   {
-//     id: 1,
-//     url: "https://images.pexels.com/photos/19036832/pexels-photo-19036832/free-photo-of-mountain-reflection-in-lake.jpeg?auto=compress&cs=tinysrgb&w=800&lazy=load",
-//   },
-//   {
-//     id: 2,
-//     url: "https://images.pexels.com/photos/17867705/pexels-photo-17867705/free-photo-of-crowd-of-hikers-on-the-mountain-ridge-at-dusk.jpeg?auto=compress&cs=tinysrgb&w=800&lazy=load",
-//   },
-//   {
-//     id: 3,
-//     url: "https://images.pexels.com/photos/21812160/pexels-photo-21812160/free-photo-of-puerta-colonial-color-rojo-de-guanajuato-mexico.jpeg?auto=compress&cs=tinysrgb&w=800&lazy=load",
-//   },
-//   {
-//     id: 4,
-//     url: "https://images.pexels.com/photos/20832069/pexels-photo-20832069/free-photo-of-a-narrow-street-with-buildings-and-cars.jpeg?auto=compress&cs=tinysrgb&w=800&lazy=load",
-//   },
-// ];
+// ProductImages component modified to expose the current product image
+// and add necessary classes for image identification
+function ProductImages({ items = [] }) {
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [mainImageUrl, setMainImageUrl] = useState("");
 
-const ProductImages = ({ items }: { items: any }) => {
-  const [index, setIndex] = useState(0);
+  // Set the first image as the selected one when items change
+  useEffect(() => {
+    if (items.length > 0) {
+      const initialImageUrl = items[0].image?.url || "";
+      setMainImageUrl(initialImageUrl);
+
+      // Store the initial product image in session storage for use in TryOut
+      if (initialImageUrl) {
+        sessionStorage.setItem("productTryOnImage", initialImageUrl);
+
+        // Also store all product images for the TryOn modal to use
+        try {
+          const allImages = items
+            .map((item) => item.image?.url)
+            .filter(Boolean);
+          sessionStorage.setItem("allProductImages", JSON.stringify(allImages));
+        } catch (error) {
+          console.error("Error storing product images:", error);
+        }
+      }
+    }
+  }, [items]);
+
+  const handleImageClick = (index) => {
+    setSelectedImage(index);
+    const newImageUrl = items[index].image?.url || "";
+    setMainImageUrl(newImageUrl);
+
+    // Also update session storage for product image
+    if (newImageUrl) {
+      sessionStorage.setItem("productTryOnImage", newImageUrl);
+    }
+  };
 
   return (
-    <div className="">
-      <div className="h-[500px] relative">
-        <Image
-          src={items[index].image?.url}
-          alt=""
-          fill
-          sizes="50vw"
-          className="object-cover rounded-md"
-        />
+    <div className="w-full">
+      {/* Main Image */}
+      <div className="w-full h-[500px] mb-4 product-image">
+        {mainImageUrl ? (
+          <img
+            src={mainImageUrl}
+            alt="Product"
+            className="w-full h-full object-contain"
+            id="main-product-image"
+          />
+        ) : (
+          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+            <p>No image available</p>
+          </div>
+        )}
       </div>
-      <div className="flex justify-between gap-4 mt-8">
-        {items.map((item:any, i:number) => (
+
+      {/* Thumbnail Images */}
+      <div className="w-full flex flex-wrap gap-2">
+        {items.map((item, i) => (
           <div
-            className="w-1/4 h-32 relative gap-4 mt-8 cursor-pointer"
-            key={item._id}
-            onClick={() => setIndex(i)}
+            key={i}
+            className={`w-24 h-24 cursor-pointer ${
+              selectedImage === i
+                ? "border-2 border-pink-500"
+                : "border border-gray-200"
+            }`}
+            onClick={() => handleImageClick(i)}
           >
-            <Image
-              src={item.image?.url}
-              alt=""
-              fill
-              sizes="30vw"
-              className="object-cover rounded-md"
-            />
+            {item.image?.url ? (
+              <img
+                src={item.image.url}
+                alt={`Product thumbnail ${i + 1}`}
+                className="w-full h-full object-cover"
+                data-product-index={i}
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                <p className="text-xs">No image</p>
+              </div>
+            )}
           </div>
         ))}
       </div>
     </div>
   );
-};
+}
 
 export default ProductImages;
